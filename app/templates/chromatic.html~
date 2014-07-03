@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>Chromatic Calculator</title>
+<link rel="stylesheet" type="text/css" href="static/tables.css">
+</head>
+
+<body>
+
+<form action="" method="post" name="data">
+    <table> 
+        <tr> <td colspan="3">Desired Colors</td> <td colspan="3">Requirements</td> </tr>
+        <tr> <td> Red </td> <td> Green </td> <td> Blue </td> 
+        <td> STR </td> <td> DEX </td> <td> INT </td> 
+        <td> X </td></tr>
+
+        <tr>
+        <td> <input type="text" name="red" maxlength="1" size="1" value="{{ c.red }}"> </td>
+        <td> <input type="text" name="green" maxlength="1" size="1" value="{{ c.green }}"> </td>
+        <td> <input type="text" name="blue" maxlength="1" size="1" value="{{ c.blue }}"> </td>
+
+        <td> <input type="text" name="str" maxlength="3" size="1" value="{{ c.str }}"> </td>
+        <td> <input type="text" name="dex" maxlength="3" size="1" value="{{ c.dex }}"> </td>
+        <td> <input type="text" name="int" maxlength="3" size="1" value="{{ c.int }}"> </td>
+
+        <td> <input type="text" name="X" maxlength="2" size="1" value="{{ c.X }}"> </td>
+        </tr>
+    </table>
+    <input type="submit" value="Calculate">
+</form>
+<!--
+<br>
+<p>Desired Color: {{ c.color_str }} <br>
+Requirements: {{ c.req_str }} <br>
+X: {{ c.X_str }}
+</p>
+-->
+
+<p> Mean # of chromes: {{ c.mean_chromes }} <br>
+Median # of chromes: {{ c.median_chromes }} <br>
+Probability after {{ c.n_to_try }} chromes: {{ c.prob_so_far }} </p>
+
+</body>
+</html>
