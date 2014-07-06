@@ -7,39 +7,102 @@
 
 <body>
 
+<div class="wrapper">
+<h1> PoE Chromatic Calculator</h1>
+
 <form action="" method="post" name="data">
     <table> 
-        <tr> <td colspan="3">Desired Colors</td> <td colspan="3">Requirements</td> </tr>
-        <tr> <td> Red </td> <td> Green </td> <td> Blue </td> 
-        <td> STR </td> <td> DEX </td> <td> INT </td> 
-        <td> X </td></tr>
+        <tr>
+            <td colspan="3">Desired Colors</td>
+            <td class="noborder">&nbsp;</td>
+            <td colspan="3">Current Colors (Optional)</td>
+            <td class="noborder">&nbsp;</td>
+            <td width="220px">Results</td>
+            <td width="80px" class="noborder"></td>
+        </tr>
 
         <tr>
-        <td> <input type="text" name="red" maxlength="1" size="1" value="{{ c.red }}"> </td>
-        <td> <input type="text" name="green" maxlength="1" size="1" value="{{ c.green }}"> </td>
-        <td> <input type="text" name="blue" maxlength="1" size="1" value="{{ c.blue }}"> </td>
+            <td> Red </td> <td> Green </td> <td> Blue </td>
+            <td class="noborder">&nbsp;</td>
+            <td> Red </td> <td> Green </td> <td> Blue </td> 
+            <td class="noborder">&nbsp;</td>
+            <td> Mean Chromes </td>
+            <td> {{ c.mean_chromes }} </td>
+        </tr>
 
-        <td> <input type="text" name="str" maxlength="3" size="1" value="{{ c.str }}"> </td>
-        <td> <input type="text" name="dex" maxlength="3" size="1" value="{{ c.dex }}"> </td>
-        <td> <input type="text" name="int" maxlength="3" size="1" value="{{ c.int }}"> </td>
+        <tr>
+            <td> <input type="text" name="des_r" maxlength="1" size="1" value="{{ c.des_r }}"> </td>
+            <td> <input type="text" name="des_g" maxlength="1" size="1" value="{{ c.des_g }}"> </td>
+            <td> <input type="text" name="des_b" maxlength="1" size="1" value="{{ c.des_b }}"> </td>
+            <td class="noborder">&nbsp;</td>
+            <td> <input type="text" name="curr_r" maxlength="1" size="1" value="{{ c.curr_r }}"> </td>
+            <td> <input type="text" name="curr_g" maxlength="1" size="1" value="{{ c.curr_g }}"> </td>
+            <td> <input type="text" name="curr_b" maxlength="1" size="1" value="{{ c.curr_b }}"> </td>
+            <td class="noborder">&nbsp;</td>
+            <td> Median Chromes </td>
+            <td> {{ c.median_chromes }} </td>
+        </tr>
 
-        <td> <input type="text" name="X" maxlength="2" size="1" value="{{ c.X }}"> </td>
+        <tr>
+            <td colspan="8" class="noborder">&nbsp;</td>
+            <td> Prob. after {{ c.n_to_try }} chromes </td>
+            <td> {{ c.prob_so_far }} </td>            
+        </tr>
+
+        <tr>
+            <td colspan="3">Stat Requirements</td>
+            <td class="noborder">&nbsp;</td>
+            <td colspan="3">Parameters</td>
+        </tr>
+
+        <tr>
+            <td> STR </td> <td> DEX </td> <td> INT </td> 
+            <td class="noborder">&nbsp;</td>
+            <td> X </td>
+            <td colspan="2"> Num Chromes to try </td>
+        </tr>
+
+        <tr>
+            <td> <input type="text" name="str" maxlength="3" size="1" value="{{ c.str }}"> </td>
+            <td> <input type="text" name="dex" maxlength="3" size="1" value="{{ c.dex }}"> </td>
+            <td> <input type="text" name="int" maxlength="3" size="1" value="{{ c.int }}"> </td>
+            <td class="noborder">&nbsp;</td>
+            <td> <input type="text" name="X" maxlength="2" size="1" value="{{ c.X }}"> </td>
+            <td colspan="2"> <input type="text" name="n_to_try" maxlength="4" size="1" value="{{ c.n_to_try }}"> </td>
         </tr>
     </table>
+    <br>
     <input type="submit" value="Calculate">
 </form>
+{% if c.intro_message == 1: %}
+    <br>
+    <h3> Instructions: </h3>
+    <p>
+        Enter the number of sockets you want of each color under "Desired Sockets". If you know the current colors in your item, you can enter them under "Current Sockets". If you don't, the calculations will be made averaging across possible color configurations.
+    </p> <br>
+    <p>
+        Under "Stat Requirements", please enter the STR, DEX, and INT requirements as displayed on your item. The "reduced stat requirement" modifier does make rolling off-colors easier, so don't just use the requirements for the base item!
+    </p> <br>
+    <p>
+        "X" is a hidden parameter of the model. I recommend the default of 12, this is my best guess. You can play around with it though. Higher values make rolling off-colors easier.
+    </p> <br>
+    <p>
+        "Num Chromes to Try" will give you the probability of getting your item after rolling N chromatic orbs.
+    </p>
+{% endif %}
 
-<!--
+<img src="{{ url_for('cdf_plot', n_prob = c.n_prob )  }}" alt="{{ c.error_message }}" width="75%">
+
+<div class="push"></div>
+
+</div>
+
 <br>
-<p>Desired Color: {{ c.color_str }} <br>
-Requirements: {{ c.req_str }} <br>
-X: {{ c.X_str }}
-</p>
--->
 
-<p> Mean # of chromes: {{ c.mean_chromes }} <br>
-Median # of chromes: {{ c.median_chromes }} <br>
-Probability after {{ c.n_to_try }} chromes: {{ c.prob_so_far }} </p>
+<div class="footer">
+v0.4 by Lawphill, <a href="howitworks">Interested in how it works?</a><br>
+Special thanks to MantisPrayingMantis and <a href="http://reddit.com/r/pathofexile">r/pathofexile</a>
+</div>
 
 </body>
 </html>

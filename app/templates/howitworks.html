@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Chromatic Calculator - How Does it Work?</title>
+<link rel="stylesheet" type="text/css" href="static/tables.css">
+</head>
+
+<body>
+
+<div class="wrapper">
+<h1> How do Chromatic Orbs work?</h1>
+<br>
+<p>
+Let's start first with some facts about chromatic orbs:
+</p><br>
+<ul>
+    <li> Just like jewelers and fusing orbs, chromatic orbs never return your item in the <em>exact</em> same state, i.e. at least one socket will change colors.
+    <li> The colors you roll are related to the stat requirements of the item, and <a href="www.pathofexile.com/forum/view-thread/529317#p4746200">lower requirements make rolling off-colors easier</a>
+</ul>
+
+<br>
+
+<p>
+This isn't a lot to work with. We don't, for instance, have confirmation that other factors like item level or item type don't play a role in the process. But let's assume for now that stat requirements are all that matter. If this is true, how exactly does a stat requirement influence the color of an item?
+</p>
+
+<br>
+<h2> Stat requirements and rolling colors</h2>
+<br>
+
+<p>
+One clue would be to look at how other orbs are rolled. During closed beta, Chris confirmed that for jewelers, <a href="www.pathofexile.com/forum/view-thread/20338#p317215"> the probability of rolling a specific number of sockets can be represented by an integer value</a>. So if 6 sockets is represented by 1 and all other sockets are represented by 305, the probability of a 6 socket is 1 out of 306.
+</p>
+
+<br>
+
+<p>
+Applying this logic to chromatic orbs, I proposed the following: Every time you roll a chromatic orb, the color of each socket is rerolled independently of the other sockets. There's an integer weight for each color, one each for red, green, and blue. That weight is the stat requirement plus some number (we'll call it "X"). We need the variable X because even though a pure strength item has zero DEX requirement, it can still roll green sockets, they're just less likely than red ones.
+</p>
+<br>
+<p>
+This means that the probability of getting a specific color socket on an item is a simple formula:
+</p> <br>
+<p>(STAT + X) / (STR + DEX + INT + 3X)</p><br>
+<p>
+This takes care of the relationship between an item's stat requirements and the probability of rolling specific colors.
+</p>
+
+<br>
+<h2> Checking for duplicate rolls </h2>
+<br>
+
+<p>
+But what about not allowing the same colors to appear? To take care of this, a check is performed after all the rolls occur. If we ended up with the exact same item, we just repeat the process. This type of rejection sampling is inefficient, but should provide us with the same end result as whatever process GGG is actually using.
+</p>
+
+<br>
+<h2> Determining the Value of X</h2>
+<br>
+
+<p> OK, so how do we figure out what X is? First we needed to collect some data. For that purpose, I opened up a <a href="https://docs.google.com/spreadsheet/ccc?key=0Ao1EUzXFpy4ldE00SWgwQVJhU0phX2dFdER2Z0FlTnc#gid=0">Community Log</a> where people could enter in data. Right now we're sitting around 1600 chromatic orbs used! That might not seem like a lot, especially when you think about how 1600 orbs isn't necessarily enough to get a good 6 off-color Shavs. But because our estimation task is simple (there's only one variable, X, to learn) and because the value of X plays a role in the process multiple times per roll, this turns out to be more than enough to get a rough estimate. More data, however, is of course always better.
+</p>
+<br>
+<p>
+If you're interested in details about how I have estimated X, I suggest you take a look at my <a href="http://www.pathofexile.com/forum/view-thread/761831">forum post</a>. Basically, I've used a Metropolis-Hastings algorithm, which although inefficient, gives me a probability distribution over X rather than a point value (also I know how to code them up easily...).
+</p>
+
+<div class="push"></div>
+
+</div>
+
+<br>
+
+<div class="footer">
+v0.4 by Lawphill, <a href="index">Back to the Calculator</a><br>
+Special thanks to MantisPrayingMantis and <a href="http://reddit.com/r/pathofexile">r/pathofexile</a>
+</div>
+
+</body>
+</html>

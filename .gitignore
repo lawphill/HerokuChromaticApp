@@ -1,2 +1,5 @@
 venv
 *.pyc
+run.py
+*.zip
+*~

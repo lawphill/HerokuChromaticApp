@@ -1,40 +1,82 @@
 #!/usr/bin/python
 
 from math import factorial,exp,log
-from itertools import permutations,combinations_with_replacement,combinations
+from itertools import combinations_with_replacement
 from numpy import matrix,append,zeros,ones,mean,divide,sum,dot
-from cmath import sqrt,pi
 from flask import request
+from cmath import sqrt,pi
 
 def default_page(request):
     # These will be the default values
-    c = { 'red': 0,
-            'green': 0,
-            'blue': 0,
+    c = { 'curr_r': 0,
+            'curr_g': 0,
+            'curr_b': 0,
+            'des_r': 0,
+            'des_g': 0,
+            'des_b': 0,
             'str': 0,
             'dex': 0,
             'int': 0,
             'X' : 12,
+            'n_to_try': 100,
+            'intro_message': 1
     }
     return c
 
 def process_data(request):
     # Let's process all the input
-    [red,green,blue] = check_input(['red','green','blue'],1,6,[1,1,1],request)
+    [des_r,des_g,des_b] = check_input(['des_r','des_g','des_b'],1,6,[1,1,1],request)
+    [curr_r,curr_g,curr_b] = check_input(['curr_r','curr_g','curr_b'],0,6,[0,0,0],request)
+
     [STR] = check_input(['str'],0,'inf',[0],request)
     [DEX] = check_input(['dex'],0,'inf',[0],request)
     [INT] = check_input(['int'],0,'inf',[0],request)
     [X] = check_input(['X'],1,'inf',[12],request)
+    [n_to_try] = check_input(['n_to_try'],1,'inf',[100],request)
 
     # Formatting
-    colors = [red,green,blue]
+    des_colors = [des_r,des_g,des_b]
+    curr_colors = [curr_r,curr_g,curr_b]
+
+    if sum(curr_colors) > 0:
+        curr_entered = 1
+        if des_colors == curr_colors or sum(des_colors) != sum(curr_colors):
+            # End process if curr == des or if items have diff. Nsockets
+            c = { 'des_r': des_r,
+                'des_g': des_g,
+                'des_b': des_b,
+                'curr_r': curr_r,
+                'curr_g': curr_g,
+                'curr_b': curr_b,
+                'str': STR,
+                'dex': DEX,
+                'int': INT,
+                'X': X,
+                'median_chromes': 0,
+                'mean_chromes': 0,
+                'n_to_try': n_to_try,
+                'prob_so_far': str(1.0)}
+            if des_colors == curr_colors:
+                c['error_message'] = "You apparently already have the item you want"
+            elif sum(des_colors) != sum(curr_colors):
+                c['error_message'] = "Your current item has a different number of sockets than your desired item"
+            return c  
+
+    else:
+        curr_entered = 0
+
     req = [STR,DEX,INT]
 
-    # Create modified desired list, so its in format [1,1,2,2,3,3]
+    # Create modified desired/current list, so its in format [1,1,2,2,3,3]
     desired = []
     for i in range(0,3):
-        for j in range(0,colors[i]):
+        for j in range(0,des_colors[i]):
             desired.append(i+1)
+
+    current = []
+    for i in range(0,3):
+        for j in range(0,curr_colors[i]):
+            current.append(i+1)
 
     # Color weights
     p = [r+X for r in req]
@@ -43,7 +85,7 @@ def process_data(request):
     Pg = p[1] / sump
     Pb = p[2] / sump
 
-    N = sum(colors)
+    N = sum(des_colors)
     Nfact = factorial(N)
 
     combs_iter = combinations_with_replacement([r+1 for r in range(3)],N)
@@ -68,6 +110,7 @@ def process_data(request):
     # Create Transition Matrix
     T = zeros((Ncombs,Ncombs))
     count = 0
+    ind = 100 # Set high so that if we find currrent first, it'll be lower than ind
     for i in combs:
         T[count,:] = Pcomb[:]
         # Self transition prob is lowered, can't return same permutation
@@ -80,6 +123,10 @@ def process_data(request):
             T[count,:] = 0
             T[count,count] = 1
             ind = count
+        if list(i) == current:
+            curr_ind = count
+            if curr_ind > ind:
+                curr_ind-=1 # This adjusts the index to fit smaller matrix t
         
         count += 1
 
@@ -111,38 +158,95 @@ def process_data(request):
     Nmat = matrix(I-Q)
     Nmat = Nmat.I
     t = Nmat * ones((len(Nmat),1))
-    mean_chromes = str(int(mean(t)))
+    if curr_entered == 0:
+        mean_chromes = float(mean(t))
+    else:
+        mean_chromes = float(t[curr_ind])
 
-    # Calculate the median
-    # The solution for n for .5 = 1 - (1-p)**n is
-    # (-.69315 + 6.2832i * n_inf)/log(1-p)
-    # or (-log(2) + 2i * pi * n_inf)/log(1-p)
-    n_inf = 1 # This can be any real number
-
+    # Modify T so that T[:,ind] represents the matrix R, probability of going from any transient state to the absorbing state, multiply by the probability of being in any transient state
     T[ind,ind] = 0
-    prob_per_chrome = float(dot(matrix(Pcomb),T[:,ind]))
-    complex_num = (-log(2) + 2*sqrt(-1)*pi*n_inf)/log(1-prob_per_chrome)
-    median_chromes = str(int(complex_num.real))
+    R = zeros((Ncombs-1,1))
+    count = 0
+    for val in T[:,ind]:
+        if val != 0:
+            R[count,0] = val
+            count += 1
 
-    # Calculate probability after some number of chromes (inexact for some cases)
-    n_to_try = 100
-    prob_so_far = 1 - (1 - prob_per_chrome)**n_to_try
+    prob_trans = zeros((1,Ncombs-1))
+    count=0
+    for i in range(len(Pcomb)):
+        if i != ind:
+            prob_trans[0,count] = Pcomb[i]
+            count += 1
+    prob_trans = divide(prob_trans,sum(prob_trans))
 
-    c = { 'red': red,
-        'green': green,
-        'blue': blue,
+    prob_per_chrome = float(dot(prob_trans,R))
+
+    # Calculate Median & cdf after n_to_try chromes
+    stopping_point = 5000 # This is where we stop calculating exactly and start approximating
+    cum_prob_failure = 1
+    found_median = 0
+
+    # Calculate probability after some number of chromes (inexact)
+    curr_state = zeros((1,Ncombs-1))
+    if curr_entered == 0:
+        count = 0
+        for i in range(len(Pcomb)):
+            if i != ind:
+                curr_state[0,count] = Pcomb[i]
+                count += 1
+        
+    else:
+        # We know where we're starting, so let's calculate more exactly
+        curr_state[0,curr_ind] = 1 # We know 100% what state we start in
+        
+    for i in range(stopping_point):
+        prob_failure = 1 - float(dot(curr_state,R))
+        cum_prob_failure = cum_prob_failure * prob_failure
+            
+        curr_state = dot(curr_state,Q) # Update current state
+        curr_state = divide(curr_state,sum(curr_state)) # Normalize to create pdf
+
+        if i+1 == n_to_try:
+            prob_so_far = 1 - cum_prob_failure
+
+        prob_success = 1 - cum_prob_failure
+        if prob_success >= .5 and found_median==0:
+            median_chromes = i+1
+            found_median = 1
+
+    prob_per_chrome = float(dot(curr_state,R))
+    if n_to_try > stopping_point: # Approximate the remaining chromes using prob_per_chrome
+        n_leftover = n_to_try - stopping_point
+        cum_prob_failure = cum_prob_failure * (1-prob_per_chrome)**n_leftover
+        prob_so_far = 1 - cum_prob_failure
+    # We may need to still calculate the median
+    if found_median == 0:
+        # Calculate the median
+        # The solution for n_left for .5 = 1 - cum_prob_failure*(1-p)**n_left is
+        # (log(1/(2*cum_prob_failure)) + 2i * pi * n_inf)/log(1-p), where log is the natural log
+        # Taking the real portion of this complex number gives the median
+        n_inf = 1 # This can be any real integer
+        complex_num = (log(1/(2*(1-prob_so_far))) + 2*sqrt(-1)*pi*n_inf)/log(1-prob_per_chrome)
+        chromes_left = float(complex_num.real)
+        median_chromes = n_to_try + chromes_left
+
+    c = { 'des_r': des_r,
+        'des_g': des_g,
+        'des_b': des_b,
+        'curr_r': curr_r,
+        'curr_g': curr_g,
+        'curr_b': curr_b,
         'str': STR,
         'dex': DEX,
         'int': INT,
         'X': X,
-        'color_str': str(colors),
-        'req_str': str(req),
-        'X_str': str(X),
-        'median_chromes': median_chromes,
-        'mean_chromes': mean_chromes,
-        'n_to_try': str(n_to_try),
-        'prob_so_far': str(prob_so_far)}
-
+        'median_chromes': round(median_chromes,1),
+        'mean_chromes': round(mean_chromes,1),
+        'n_to_try': n_to_try,
+        'prob_so_far': round(prob_so_far,3),
+        'n_prob': str(n_to_try) + '_' + str(prob_per_chrome),
+        'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome)}
     return c
 
 def check_input(input_list,min_val,max_val,default,request):
@@ -160,7 +264,6 @@ def check_input(input_list,min_val,max_val,default,request):
 
         cum_val += input_var
         output_list.append(input_var)
-
 
     # If out of bounds, set to default value
     if cum_val < min_val:
