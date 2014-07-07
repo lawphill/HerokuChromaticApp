@@ -6,6 +6,8 @@ from numpy import matrix,append,zeros,ones,mean,divide,sum,dot
 from flask import request
 from cmath import sqrt,pi
 
+# Little change that doesn't affect anything
+
 def default_page(request):
     # These will be the default values
     c = { 'curr_r': 0,
