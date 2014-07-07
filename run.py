@@ -1,3 +1,3 @@
 #!venv/bin/python
-from app import app
+from chrome import app
 app.run(debug=True)

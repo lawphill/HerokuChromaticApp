@@ -4,8 +4,10 @@ from math import factorial,exp,log
 print "DEBUG: In Chromatic, imported math"
 from itertools import combinations_with_replacement
 print "DEBUG: In Chromatic, imported itertools"
-from numpy import matrix,append,zeros,ones,mean,divide,sum,dot
+from numpy import matrix,append,zeros,ones,mean,divide,dot
 print "DEBUG: In Chromatic, imported numpy"
+from numpy import sum as numpy_sum
+print "DEBUG: In Chromatic, imported sum from numpy"
 from flask import request
 print "DEBUG: In Chromatic, imported flask"
 from cmath import sqrt,pi
@@ -43,9 +45,9 @@ def process_data(request):
     des_colors = [des_r,des_g,des_b]
     curr_colors = [curr_r,curr_g,curr_b]
 
-    if sum(curr_colors) > 0:
+    if numpy_sum(curr_colors) > 0:
         curr_entered = 1
-        if des_colors == curr_colors or sum(des_colors) != sum(curr_colors):
+        if des_colors == curr_colors or numpy_sum(des_colors) != numpy_sum(curr_colors):
             # End process if curr == des or if items have diff. Nsockets
             c = { 'des_r': des_r,
                 'des_g': des_g,
@@ -63,7 +65,7 @@ def process_data(request):
                 'prob_so_far': str(1.0)}
             if des_colors == curr_colors:
                 c['error_message'] = "You apparently already have the item you want"
-            elif sum(des_colors) != sum(curr_colors):
+            elif numpy_sum(des_colors) != numpy_sum(curr_colors):
                 c['error_message'] = "Your current item has a different number of sockets than your desired item"
             return c  
 
@@ -85,7 +87,7 @@ def process_data(request):
 
     # Color weights
     p = [r+X for r in req]
-    sump = float(sum(p))
+    sump = float(numpy_sum(p))
     Pr = p[0] / sump
     Pg = p[1] / sump
     Pb = p[2] / sump
@@ -120,7 +122,7 @@ def process_data(request):
         T[count,:] = Pcomb[:]
         # Self transition prob is lowered, can't return same permutation
         T[count,count] = (Pcomb[count]-Pperm[count])/(1-Pperm[count])
-        total = sum(T[count,:])
+        total = numpy_sum(T[count,:])
         T[count,:] = divide(T[count,:],total)
 
         # If we reach the desired state we're done
@@ -183,7 +185,7 @@ def process_data(request):
         if i != ind:
             prob_trans[0,count] = Pcomb[i]
             count += 1
-    prob_trans = divide(prob_trans,sum(prob_trans))
+    prob_trans = divide(prob_trans,numpy_sum(prob_trans))
 
     prob_per_chrome = float(dot(prob_trans,R))
 
@@ -210,7 +212,7 @@ def process_data(request):
         cum_prob_failure = cum_prob_failure * prob_failure
             
         curr_state = dot(curr_state,Q) # Update current state
-        curr_state = divide(curr_state,sum(curr_state)) # Normalize to create pdf
+        curr_state = divide(curr_state,numpy_sum(curr_state)) # Normalize to create pdf
 
         if i+1 == n_to_try:
             prob_so_far = 1 - cum_prob_failure
