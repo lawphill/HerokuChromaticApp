@@ -12,6 +12,8 @@ def index():
     else:
         c = default_page(request)
 
+    print "Received a call to index page"
+
     return render_template("chromatic.html",
         c = c)
 
