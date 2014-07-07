@@ -4,6 +4,8 @@ from chromatic import process_data, default_page
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 from StringIO import StringIO
 
+print "Made it to the top of views.py"
+
 @app.route('/',methods=['POST','GET'])
 @app.route('/index',methods=['POST','GET'])
 def index():
