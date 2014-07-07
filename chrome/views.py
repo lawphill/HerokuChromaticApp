@@ -1,7 +1,7 @@
 print "DEBUG: In views.py, before imports"
 
 from flask import render_template, request, send_file
-from chrome import ap
+from chrome import app
 from chromatic import process_data, default_page
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 from StringIO import StringIO
