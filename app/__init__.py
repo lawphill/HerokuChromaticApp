@@ -6,6 +6,6 @@ app.config.from_object('config')
 
 print "App configured"
 
-import views
+from app import views
 
 print "Views was imported"
