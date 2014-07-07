@@ -1,10 +1,15 @@
 #!/usr/bin/python
 
 from math import factorial,exp,log
+print "DEBUG: In Chromatic, imported math"
 from itertools import combinations_with_replacement
+print "DEBUG: In Chromatic, imported itertools"
 from numpy import matrix,append,zeros,ones,mean,divide,sum,dot
+print "DEBUG: In Chromatic, imported numpy"
 from flask import request
+print "DEBUG: In Chromatic, imported flask"
 from cmath import sqrt,pi
+print "DEBUG: In Chromatic, imported cmath"
 
 def default_page(request):
     # These will be the default values
