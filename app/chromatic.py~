@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from math import factorial,exp,log
-from itertools import permutations,combinations_with_replacement,combinations
+from itertools import combinations_with_replacement
 from numpy import matrix,append,zeros,ones,mean,divide,sum,dot
 from flask import request
 from cmath import sqrt,pi
