@@ -1,8 +1,5 @@
 from flask import Flask
 
-
-
-
 print "Init file was called"
 
 app = Flask(__name__)

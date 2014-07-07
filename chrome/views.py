@@ -1,10 +1,12 @@
+print "DEBUG: In views.py, before imports"
+
 from flask import render_template, request, send_file
 from chrome import ap
 from chromatic import process_data, default_page
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 from StringIO import StringIO
 
-print "Made it to the top of views.py"
+print "DEBUG: In views.py, made it past imports"
 
 @app.route('/',methods=['POST','GET'])
 @app.route('/index',methods=['POST','GET'])
