@@ -7,7 +7,7 @@ print "DEBUG: imported from chrome"
 from chromatic import process_data, default_page
 print "DEBUG: imported from chromatic"
 #from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
-from matplotlib import pyplot
+#from matplotlib import pyplot
 print "DEBUG: Imported pyplot from matplotlib"
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 print "DEBUG: imported from pylab"
