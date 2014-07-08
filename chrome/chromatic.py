@@ -253,7 +253,8 @@ def process_data(request):
         'n_to_try': n_to_try,
         'prob_so_far': round(prob_so_far,3),
         'n_prob': str(n_to_try) + '_' + str(prob_per_chrome),
-        'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome)}
+        'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome),
+	'intro_message': 0}
     return c
 
 def check_input(input_list,min_val,max_val,default,request):
