@@ -8,6 +8,7 @@ from chromatic import process_data, default_page
 print "DEBUG: imported from chromatic"
 #from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 from matplotlib import pylab
+print "DEBUG: Imported from matplotlib"
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
 print "DEBUG: imported from pylab"
 from StringIO import StringIO
