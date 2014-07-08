@@ -58,8 +58,7 @@ def process_data(request):
                 'median_chromes': 0,
                 'mean_chromes': 0,
                 'n_to_try': n_to_try,
-                'prob_so_far': str(1.0),
-		'intro_message': 0}
+                'prob_so_far': str(1.0)}
             if des_colors == curr_colors:
                 c['error_message'] = "You apparently already have the item you want"
             elif numpy_sum(des_colors) != numpy_sum(curr_colors):
