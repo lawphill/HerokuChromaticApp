@@ -1,17 +1,11 @@
 #!/usr/bin/python
 
 from math import factorial,exp,log
-print "DEBUG: In Chromatic, imported math"
 from itertools import combinations_with_replacement
-print "DEBUG: In Chromatic, imported itertools"
 from numpy import matrix,append,zeros,ones,mean,divide,dot
-print "DEBUG: In Chromatic, imported numpy"
 from numpy import sum as numpy_sum
-print "DEBUG: In Chromatic, imported sum from numpy"
 from flask import request
-print "DEBUG: In Chromatic, imported flask"
 from cmath import sqrt,pi
-print "DEBUG: In Chromatic, imported cmath"
 
 def default_page(request):
     # These will be the default values
@@ -47,6 +41,8 @@ def process_data(request):
 
     if numpy_sum(curr_colors) > 0:
         curr_entered = 1
+
+	# CHECK FOR ERRORS
         if des_colors == curr_colors or numpy_sum(des_colors) != numpy_sum(curr_colors):
             # End process if curr == des or if items have diff. Nsockets
             c = { 'des_r': des_r,
@@ -62,7 +58,8 @@ def process_data(request):
                 'median_chromes': 0,
                 'mean_chromes': 0,
                 'n_to_try': n_to_try,
-                'prob_so_far': str(1.0)}
+                'prob_so_far': str(1.0),
+		'intro_message': 0}
             if des_colors == curr_colors:
                 c['error_message'] = "You apparently already have the item you want"
             elif numpy_sum(des_colors) != numpy_sum(curr_colors):

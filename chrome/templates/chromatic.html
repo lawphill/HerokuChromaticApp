@@ -91,8 +91,10 @@
     </p>
 {% endif %}
 
+{{ c.error_message }}<br>
+
 {% if c.intro_message == 0: %}
-<img src="{{ url_for('cdf_plot', n_prob = c.n_prob )  }}" alt="{{ c.error_message }}" width="50%">
+<img src="{{ url_for('cdf_plot', n_prob = c.n_prob )  }}" width="50%">
 {% endif %}
 <div class="push"></div>
 

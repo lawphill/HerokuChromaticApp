@@ -1,20 +1,8 @@
-print "DEBUG: In views.py, before imports"
-
 from flask import render_template, request, send_file
-print "DEBUG: imported from flask"
 from chrome import app
-print "DEBUG: imported from chrome"
 from chromatic import process_data, default_page
-print "DEBUG: imported from chromatic"
-#from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
-#from matplotlib import pyplot
-print "DEBUG: Imported pyplot from matplotlib"
 from pylab import plot, close, savefig, figure, title, xlabel, ylabel, grid
-print "DEBUG: imported from pylab"
 from StringIO import StringIO
-print "DEBUG: imported from StringIO"
-
-print "DEBUG: In views.py, made it past imports"
 
 @app.route('/',methods=['POST','GET'])
 @app.route('/index',methods=['POST','GET'])
@@ -23,8 +11,6 @@ def index():
         c = process_data(request)
     else:
         c = default_page(request)
-
-    print "Received a call to index page"
 
     return render_template("chromatic.html",
         c = c)
