@@ -1,0 +1,189 @@
+<html>
+<head>
+<title> Testing the Toast Grid System </title>
+<link rel="stylesheet" href="static/grid.css">
+<link rel="stylesheet" href="static/webformat.css">
+</head>
+
+<body>
+{{ c.reqform }}
+
+<form action="" method="post" name="data">
+<div class="container">
+    <div class="grid">
+
+        <div class="grid__col grid__col--7-of-12 grid__col--centered header">
+            <h1>PoE Chromatic Calculator</h1>
+        </div>
+
+        <!-- Category Labels -->
+        <div class="grid__col grid__col--1-of-3">
+            <p class="top-label">Desired Colors</p>
+        </div>
+        <div class="grid__col grid__col--1-of-3">
+            <p class="top-label">Current Colors</p>
+        </div>
+        <div class="grid__col grid__col--1-of-3">
+            <p class="top-label">Stat Requirements</p>
+        </div>
+
+        <!-- Sub Labels -->
+        <div class="grid__col grid__col--1-of-9">
+            Red
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            Green
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            Blue
+        </div>
+
+        <div class="grid__col grid__col--1-of-9">
+            Red
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            Green
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            Blue
+        </div>
+
+        <div class="grid__col grid__col--1-of-9">
+            STR
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            DEX
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            INT
+        </div>
+
+        <!-- Input Boxes -->
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="des_r" maxlength="1" size="1" value="{{ c.des_r }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="des_g" maxlength="1" size="1" value="{{ c.des_g }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="des_b" maxlength="1" size="1" value="{{ c.des_b }}">
+        </div>
+
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="curr_r" maxlength="1" size="1" value="{{ c.curr_r }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="curr_g" maxlength="1" size="1" value="{{ c.curr_g }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="curr_b" maxlength="1" size="1" value="{{ c.curr_b }}">
+        </div>
+
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="str" maxlength="3" size="1" value="{{ c.str }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="dex" maxlength="3" size="1" value="{{ c.dex }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="int" maxlength="3" size="1" value="{{ c.int }}">
+        </div>
+
+        <!-- Second Row -->
+        <div class="grid__col grid__col--1-of-3">
+            <p class="top-label">Settings</p>
+        </div>
+
+        <div class="grid__col grid__col--2-of-3">
+            {% if c.intro_message == 0: %}
+                <br>
+                <img src="{{ url_for('cdf_plot', n_prob = c.n_prob ) }}" class="graph" width="62%">
+            {% endif %}
+        </div>
+
+        <!-- Sub Labels -->
+        <div class="grid__col grid__col--1-of-9">
+            X
+        </div>
+        <div class="grid__col grid__col--2-of-9">
+            # Chromes To Try
+        </div>
+
+        <div class="grid__col grid__col--2-of-3">
+        </div>
+
+
+        <!-- Input -->
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="X" maxlength="3" size="1" value="{{ c.X }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="text" name="n_to_try" maxlength="3" size="1" value="{{ c.n_to_try }}">
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+        </div>
+
+        <div class="grid__col grid__col--2-of-3">
+        </div>
+
+
+        <!-- Submit/Results -->
+        <br><br>
+        <div class="grid__col grid__col--1-of-9">
+            <input type="submit" value="Calculate">
+        </div> 
+
+        <div class="grid__col grid__col--2-of-9">
+            <input type="submit" value="Instructions">
+        </div>
+
+        <br>
+
+        {% if c.intro_message == 0: %}
+        <div class="grid__col grid__col--1-of-3">
+            <p class="top-label">Results</p>
+        </div>
+        <div class="grid__col grid__col--2-of-3">
+        </div>
+
+        <div class="grid__col grid__col--2-of-9">
+            Mean:
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            {{ c.mean_chromes }}
+        </div>
+
+
+        <div class="grid__col grid__col--2-of-3">
+        </div>
+
+        <div class="grid__col grid__col--2-of-9">
+            Median:
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            {{ c.median_chromes }}
+        </div>
+        <div class="grid__col grid__col--2-of-3">
+        </div>
+
+
+        <div class="grid__col grid__col--2-of-9">
+            % after {{ c.n_to_try }} Chromes:
+        </div>
+        <div class="grid__col grid__col--1-of-9">
+            {{ c.prob_so_far }}
+        </div>
+
+
+       
+        {% endif %}
+
+
+
+    </div>
+</div>
+</form>
+
+
+</body>
+</html>

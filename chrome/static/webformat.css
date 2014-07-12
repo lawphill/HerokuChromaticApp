@@ -1,0 +1,55 @@
+body {
+    background-color: #bbbbbb;
+}
+
+h1 {
+    color: #000000;
+    font-family: "Dok Champa",serif;
+    border-bottom-style: solid;
+    border-color: black;
+}
+
+p {
+}
+
+input {
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    width: 100%;
+    padding: 0 5px;
+}
+
+
+.border {
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+.container {
+    margin: 0% 2.5%;
+    width: 95%;
+    max-width: 960px;
+}
+
+.top-label {   
+    text-align: center;
+    margin-bottom: 10px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+}
+
+.graph {
+    position: absolute;
+    float: right;
+}
+
+.header {
+    text-align: center;
+}
+
+.trace {
+    background-color: #ff0000;
+}
