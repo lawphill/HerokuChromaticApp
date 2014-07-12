@@ -12,8 +12,6 @@ def index():
     else:
         c = default_page(request)
 
-    c.reqform = request.form['instruct']
-
     return render_template("chromatic.html",
         c = c)
 
