@@ -6,7 +6,6 @@
 </head>
 
 <body>
-{{ c.reqform }}
 
 <form action="" method="post" name="data">
 <div class="container">
@@ -89,19 +88,44 @@
             <input type="text" name="int" maxlength="3" size="1" value="{{ c.int }}">
         </div>
 
-        <!-- Second Row -->
+        <!-- Settings Row Label -->
         <div class="grid__col grid__col--1-of-3">
             <p class="top-label">Settings</p>
         </div>
 
-        <div class="grid__col grid__col--2-of-3">
+
+        <!-- Graph Plot/Tutorial--> 
+        <div class="grid__col grid__col--2-of-3 graph">
+
             {% if c.intro_message == 0: %}
                 <br>
-                <img src="{{ url_for('cdf_plot', n_prob = c.n_prob ) }}" class="graph" width="62%">
+                <img src="{{ url_for('cdf_plot', n_prob = c.n_prob ) }}" width="100%">
+            {% elif c.intro_message == 1: %}
+                    <p class="top-label">Instructions</p>
+                    Enter the number of sockets you want of each color under "Desired Sockets". If you know the current colors in your item, you can enter them under "Current Sockets".
+                    <br><br>
+                    Under "Stat Requirements", please enter the STR, DEX, and INT requirements as displayed exactly on your item.
+                    <br><br>
+                    "# Chromes to Try" will give you the probability of getting your desired colors after rolling that many chromatic orbs.
+                    <br><br>
+                    For advanced users, "X" is a hidden parameter of the model. I recommend the default of 12, but you can play around with it. Higher values would make rolling off-colors easier.
+                    <br>
+            {% else %}
+                <h3>Error!</h3>
+                {{ c.error_message }}
+                <!-- 30 Hail Marys have been given to atone for this horrible hack -->
+                <br><br><br><br><br><br>
             {% endif %}
+<br><br>
+<footer>
+v0.4 by Lawphill, <a href="howitworks">Interested in how it works?</a><br>
+Special thanks to MantisPrayingMantis and <a href="http://reddit.com/r/pathofexile">r/pathofexile</a>
+</footer>
         </div>
+        <div class="grid__col grid__col--2-of-3"> </div>
 
-        <!-- Sub Labels -->
+
+        <!-- Settings Sub Labels -->
         <div class="grid__col grid__col--1-of-9">
             X
         </div>
@@ -113,7 +137,7 @@
         </div>
 
 
-        <!-- Input -->
+        <!-- Settings Input -->
         <div class="grid__col grid__col--1-of-9">
             <input type="text" name="X" maxlength="3" size="1" value="{{ c.X }}">
         </div>
@@ -122,23 +146,22 @@
         </div>
         <div class="grid__col grid__col--1-of-9">
         </div>
-
         <div class="grid__col grid__col--2-of-3">
         </div>
 
 
-        <!-- Submit/Results -->
+        <!-- Submit/Reset Button -->
         <br><br>
         <div class="grid__col grid__col--1-of-9">
             <input type="submit" value="Calculate">
-        </div> 
-
-        <div class="grid__col grid__col--2-of-9">
-            <input type="submit" value="Instructions">
         </div>
-
+        <div class="grid__col grid__col--1-of-9">
+            <input type="submit" formmethod="get" value="Reset">
+        </div>
         <br>
 
+
+        <!-- Results Section, only display after calculation-->
         {% if c.intro_message == 0: %}
         <div class="grid__col grid__col--1-of-3">
             <p class="top-label">Results</p>
@@ -153,7 +176,6 @@
             {{ c.mean_chromes }}
         </div>
 
-
         <div class="grid__col grid__col--2-of-3">
         </div>
 
@@ -166,24 +188,17 @@
         <div class="grid__col grid__col--2-of-3">
         </div>
 
-
         <div class="grid__col grid__col--2-of-9">
             % after {{ c.n_to_try }} Chromes:
         </div>
         <div class="grid__col grid__col--1-of-9">
             {{ c.prob_so_far }}
         </div>
-
-
-       
         {% endif %}
-
-
-
+        <!-- End Results Section -->
     </div>
 </div>
 </form>
-
 
 </body>
 </html>
