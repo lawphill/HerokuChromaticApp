@@ -24,18 +24,28 @@ input {
     padding: 0 5px;
 }
 
-.border {
+table, tr, td{
     border-style: solid;
     border-color: black;
     border-width: 2px;
+}
+
+table {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #dddddd;
+}
+
+td {
+    padding: 3px;
 }
 
 .container {
     margin-left: auto;
     margin-right: auto;
     width: 95%;
-    max-width: 960px;
-    
+    max-width: 960px;    
 }
 
 .top-label {   
@@ -47,17 +57,12 @@ input {
     background-color: #ffffff;
 }
 
-.graph {
-    position: absolute;
-    max-width: 616px;
-    float: right;
-    width: 100%;
-}
-
 .header {
     text-align: center;
 }
 
-.trace {
-    background-color:#ff0000;
+.equation {
+    text-indent: 20px;
+    font-family: "courier",monospace;
+    font-style: italic;
 }

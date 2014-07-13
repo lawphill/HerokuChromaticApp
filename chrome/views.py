@@ -41,12 +41,3 @@ def cdf_plot(n_prob):
 @app.route('/howitworks')
 def howitworks():
     return render_template("howitworks.html")
-
-@app.route('/gridtest',methods=['POST','GET'])
-def gridtest():
-    if request.method == 'POST':
-        c = process_data(request)
-    else:
-        c = default_page(request)
-
-    return render_template("gridtest.html",c=c)
