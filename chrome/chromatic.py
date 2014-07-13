@@ -26,47 +26,66 @@ def default_page(request):
 
 def process_data(request):
     # Let's process all the input
-    [des_r,des_g,des_b] = check_input(['des_r','des_g','des_b'],1,6,[1,1,1],request)
-    [curr_r,curr_g,curr_b] = check_input(['curr_r','curr_g','curr_b'],0,6,[0,0,0],request)
+    error_list = []
+    [des_r,des_g,des_b], error_list = check_input(['des_r','des_g','des_b'],1,6,request,error_list)
+    [curr_r,curr_g,curr_b], error_list = check_input(['curr_r','curr_g','curr_b'],0,6,request,error_list)
 
-    [STR] = check_input(['str'],0,'inf',[0],request)
-    [DEX] = check_input(['dex'],0,'inf',[0],request)
-    [INT] = check_input(['int'],0,'inf',[0],request)
-    [X] = check_input(['X'],1,'inf',[12],request)
-    [n_to_try] = check_input(['n_to_try'],1,'inf',[100],request)
+    [STR], error_list = check_input(['str'],0,'inf',request,error_list)
+    [DEX], error_list = check_input(['dex'],0,'inf',request,error_list)
+    [INT], error_list = check_input(['int'],0,'inf',request,error_list)
+    [X], error_list = check_input(['X'],1,'inf',request,error_list)
+    [n_to_try], error_list = check_input(['n_to_try'],1,'inf',request,error_list)
 
     # Formatting
     des_colors = [des_r,des_g,des_b]
     curr_colors = [curr_r,curr_g,curr_b]
 
-    if numpy_sum(curr_colors) > 0:
-        curr_entered = 1
-
-	# CHECK FOR ERRORS
-        if des_colors == curr_colors or numpy_sum(des_colors) != numpy_sum(curr_colors):
-            # End process if curr == des or if items have diff. Nsockets
-            c = { 'des_r': des_r,
-                'des_g': des_g,
-                'des_b': des_b,
-                'curr_r': curr_r,
-                'curr_g': curr_g,
-                'curr_b': curr_b,
-                'str': STR,
-                'dex': DEX,
-                'int': INT,
-                'X': X,
-                'median_chromes': 0,
-                'mean_chromes': 0,
-                'n_to_try': n_to_try,
-                'prob_so_far': str(1.0)}
-            if des_colors == curr_colors:
-                c['error_message'] = "You apparently already have the item you want"
-            elif numpy_sum(des_colors) != numpy_sum(curr_colors):
-                c['error_message'] = "Your current item has a different number of sockets than your desired item"
-            return c  
-
-    else:
+    try:
+        if numpy_sum(curr_colors) > 0: # Did they enter the current colors?
+            curr_entered = 1
+        else:
+            curr_entered = 0
+        type_error = 0
+    except TypeError:
         curr_entered = 0
+        type_error = 1
+    try:
+        numpy_sum(des_colors) > 0
+    except TypeError:
+        type_error = 1
+        
+
+    # Default to this for error messages
+    c = { 'des_r': des_r,
+        'des_g': des_g,
+        'des_b': des_b,
+        'curr_r': curr_r,
+        'curr_g': curr_g,
+        'curr_b': curr_b,
+        'str': STR,
+        'dex': DEX,
+        'int': INT,
+        'X': X,
+        'median_chromes': 0,
+        'mean_chromes': 0,
+        'n_to_try': n_to_try,
+        'prob_so_far': str(1.0)}
+
+
+	# Check for Errors
+    if type_error == 0:
+        if numpy_sum(des_colors) == 0: # No desired colors entered
+            error_list.append("Please enter a valid desired item configuration")
+        elif des_colors == curr_colors: # Equivalent items entered
+            error_list.append("You apparently already have the item you want")
+        elif numpy_sum(des_colors) != numpy_sum(curr_colors) and curr_entered==1: # Diff num sockets
+            error_list.append("Your current item has a different number of sockets than your desired item")
+
+    # Quit on error
+    if len(error_list) > 0:
+        c['error_message'] = error_list
+        return c
+
 
     req = [STR,DEX,INT]
 
@@ -247,34 +266,53 @@ def process_data(request):
         'median_chromes': round(median_chromes,1),
         'mean_chromes': round(mean_chromes,1),
         'n_to_try': n_to_try,
-        'prob_so_far': round(prob_so_far,3),
+        'prob_so_far': str(round(prob_so_far*100,1)) + '%',
         'n_prob': str(n_to_try) + '_' + str(prob_per_chrome),
         'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome),
 	'intro_message': 0}
     return c
 
-def check_input(input_list,min_val,max_val,default,request):
+def check_input(input_list,min_val,max_val,request,error_list):
     output_list=[]
     cum_val = 0
+    error_message = 0
     for i in range(len(input_list)):
         input_str = input_list[i]
         if input_str in request.form:
-            try:
-                input_var = int(request.form[input_str])
-            except ValueError:
+            if request.form[input_str] != '':
+                try:
+                    input_var = int(request.form[input_str])
+                except ValueError:
+                    input_var = request.form[input_str]
+                    error_message = "Value not an integer"
+            else:
                 input_var = 0
         else:
             input_var = 0
 
-        cum_val += input_var
+        if error_message == 0:
+            cum_val += input_var
+
         output_list.append(input_var)
 
     # If out of bounds, set to default value
-    if cum_val < min_val:
-        output_list = default
+    if cum_val < min_val and error_message==0:
+        error_message = "Value too small, minimum = " + str(min_val)
     # If greater than max_val, don't check if max_val = 'inf'
-    elif max_val != 'inf':
+    elif max_val != 'inf' and error_message==0:
         if cum_val > max_val:
-            output_list = default
-    
-    return output_list
+            error_message = "Value too large, maximum = " + str(max_val)
+
+    if error_message != 0:
+        # Unique Error messages for each input
+        if input_list == ['des_r','des_g','des_b']:
+            error_message = "Desired Colors: " + error_message
+        elif input_list == ['curr_r','curr_g','curr_b']:
+            error_message = "Current Colors: " + error_message
+        elif input_list == ['n_to_try']:
+            error_message = "NChr: " + error_message
+        elif len(input_list)==1:
+            error_message = input_list[0] + ": " + error_message
+        error_list.append(error_message)    
+
+    return output_list, error_list

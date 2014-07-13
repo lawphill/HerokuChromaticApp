@@ -165,7 +165,9 @@
                     <br>
             {% else %}
                 <h3>Error!</h3>
-                {{ c.error_message }}
+                {% for error in c.error_message %}
+                {{ error }}<br>
+                {% endfor %}
                 <!-- 30 Hail Marys have been given to atone for this horrible hack -->
                 <br><br><br><br><br><br>
             {% endif %}

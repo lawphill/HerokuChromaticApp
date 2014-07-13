@@ -224,6 +224,12 @@
         So, not perfect but pretty good. Certainly, the model even with just a single parameter is able to account for the data we've collected so far without any real trouble. Of course, we can always use more data, so feel free to submit your own using the link in the footer!
         </p>
 
+        <h2> Other Notes </h2>
+
+        <p>
+        All calculations are made as exactly as possible. Mean calculations are made based on an <a href="http://en.wikipedia.org/wiki/Absorbing_Markov_chain">absorbing Markov chain</a> (Thanks to MantisPrayingMantis for pointing this out). The median and '% after NChr' calculations are made exactly so long as the result is less than 5000 chromatic orbs. At some point, it makes sense to stop calculating each chromatic orb exactly, and just start estimating. Note that the estimates tend to be slightly more optimistic than they should be. So, for instance, if the median displayed is 9000 orbs, in reality it's probably a little higher, maybe 9050 (yes, it's over 9000). Likewise for the '% after NChr' calculations, if you ask for the probability after 9000 chromatics, the percentage listed is too optimistic, so if it says 50%, it's probably slightly lower, maybe 49.8%. Even though the estimated probability is off by only a small amount, when you start multiplying that error a few hundred/thousand times it does add up.
+        </p>
+
         <br>
         <footer>
         v1.0 by Lawphill, <a href="/">Back to the Calculator</a><br>
