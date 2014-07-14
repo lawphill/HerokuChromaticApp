@@ -222,6 +222,9 @@ def process_data(request):
         # We know where we're starting, so let's calculate more exactly
         curr_state[0,curr_ind] = 1 # We know 100% what state we start in
         
+    # Force sum(curr_state) = 1
+    curr_state = divide(curr_state,numpy_sum(curr_state))
+
     for i in range(stopping_point):
         prob_failure = 1 - float(dot(curr_state,R))
         cum_prob_failure = cum_prob_failure * prob_failure
