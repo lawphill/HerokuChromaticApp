@@ -2,7 +2,7 @@
 
 from math import factorial,exp,log
 from itertools import combinations_with_replacement
-from numpy import matrix,append,zeros,ones,mean,divide,dot
+from numpy import matrix,append,zeros,ones,mean,divide,dot,subtract
 from numpy import sum as numpy_sum
 from flask import request
 from cmath import sqrt,pi
@@ -18,7 +18,7 @@ def default_page(request):
             'str': 0,
             'dex': 0,
             'int': 0,
-            'X' : 12,
+            'X' : 16,
             'n_to_try': 100,
             'intro_message': 1
     }
@@ -86,8 +86,150 @@ def process_data(request):
         c['error_message'] = error_list
         return c
 
-
     req = [STR,DEX,INT]
+
+    # Perform statistics calculations
+    median_chromes, mean_chromes, n_to_try, prob_so_far, prob_per_chrome = calc_stats(des_colors,curr_colors,curr_entered,req,X,n_to_try)
+
+    # Calculate Vorici Results
+    vorici_1 = 4
+    vorici_2_same = 25
+    vorici_3_same = 285
+    vorici_2_diff = 15
+    vorici_3_diff = 100
+
+    # Determine possibly relevant Vorici mods
+    poss_vorici = []
+    if des_r >= 1:
+        poss_vorici.append([1,0,0])
+        if des_r >= 2:
+            poss_vorici.append([2,0,0])
+        if des_g >= 2:
+            poss_vorici.append([1,2,0])
+        if des_b >= 2:
+            poss_vorici.append([1,0,2])
+
+    if des_g >= 1:
+        poss_vorici.append([0,1,0])
+        if des_r >= 2:
+            poss_vorici.append([2,1,0])
+        if des_g >= 2:
+            poss_vorici.append([0,2,0])
+        if des_b >= 2:
+            poss_vorici.append([0,1,2])
+
+    if des_b >= 1:
+        poss_vorici.append([0,0,1])
+        if des_r >= 2:
+            poss_vorici.append([2,0,1])
+        if des_g >= 2:
+            poss_vorici.append([0,2,1])
+        if des_b >= 2:
+            poss_vorici.append([0,0,2])
+        
+    # Calculate chances for each Vorici mod
+    # NOTE: Ignores curr_colors, also only capturing mean values
+    vorici_means = []
+    vorici_dict = {}
+    best_vorici = -1
+    best_vorici_mean = -1
+    for vorici_colors in poss_vorici:
+        altered_colors = subtract(des_colors,vorici_colors)
+        vor_median_chromes, vor_mean_chromes, vor_n_to_try, vor_prob_so_far, vor_prob_per_chrome = calc_stats(altered_colors,[0,0,0],0,req,X,n_to_try)
+
+        vorici_means.append(vor_mean_chromes)
+
+        if vor_mean_chromes < best_vorici_mean or best_vorici_mean == -1:
+            best_vorici_mean = vor_mean_chromes
+            best_vorici = vorici_colors
+
+    # Determine proper multiplier
+    if numpy_sum(best_vorici) == 1:
+        vorici_mult = vorici_1
+    elif numpy_sum(best_vorici) == 2:
+        if 1 in best_vorici:
+            vorici_mult = vorici_2_diff
+        else:
+            vorici_mult = vorici_2_same
+    elif numpy_sum(best_vorici) == 3:
+        if 3 in best_vorici:
+            vorici_mult = vorici_3_same
+        else:
+            vorici_mult = vorici_3_diff
+
+    best_vorici_cost = best_vorici_mean * vorici_mult
+
+    
+
+    # Return Information
+    c = { 'des_r': des_r,
+        'des_g': des_g,
+        'des_b': des_b,
+        'curr_r': curr_r,
+        'curr_g': curr_g,
+        'curr_b': curr_b,
+        'str': STR,
+        'dex': DEX,
+        'int': INT,
+        'X': X,
+        'median_chromes': round(median_chromes,1),
+        'mean_chromes': round(mean_chromes,1),
+        'n_to_try': n_to_try,
+        'prob_so_far': str(round(prob_so_far*100,1)) + '%',
+        'n_prob': str(n_to_try) + '_' + str(prob_per_chrome),
+        'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome),
+	'intro_message': 0,
+        'vorici_colors': best_vorici,
+        'vorici_mean': best_vorici_mean,
+        'vorici_cost': best_vorici_cost}
+    return c
+
+def check_input(input_list,min_val,max_val,request,error_list):
+    output_list=[]
+    cum_val = 0
+    error_message = 0
+    for i in range(len(input_list)):
+        input_str = input_list[i]
+        if input_str in request.form:
+            if request.form[input_str] != '':
+                try:
+                    input_var = int(request.form[input_str])
+                except ValueError:
+                    input_var = request.form[input_str]
+                    error_message = "Value not an integer"
+            else:
+                input_var = 0
+        else:
+            input_var = 0
+
+        if error_message == 0:
+            cum_val += input_var
+
+        output_list.append(input_var)
+
+    # If out of bounds, set to default value
+    if cum_val < min_val and error_message==0:
+        error_message = "Value too small, minimum = " + str(min_val)
+    # If greater than max_val, don't check if max_val = 'inf'
+    elif max_val != 'inf' and error_message==0:
+        if cum_val > max_val:
+            error_message = "Value too large, maximum = " + str(max_val)
+
+    if error_message != 0:
+        # Unique Error messages for each input
+        if input_list == ['des_r','des_g','des_b']:
+            error_message = "Desired Colors: " + error_message
+        elif input_list == ['curr_r','curr_g','curr_b']:
+            error_message = "Current Colors: " + error_message
+        elif input_list == ['n_to_try']:
+            error_message = "NChr: " + error_message
+        elif len(input_list)==1:
+            error_message = input_list[0] + ": " + error_message
+        error_list.append(error_message)    
+
+    return output_list, error_list
+
+def calc_stats(des_colors,curr_colors,curr_entered,req,X,n_to_try):
 
     # Create modified desired/current list, so its in format [1,1,2,2,3,3]
     desired = []
@@ -98,7 +240,7 @@ def process_data(request):
     current = []
     for i in range(0,3):
         for j in range(0,curr_colors[i]):
-            current.append(i+1)
+            current.append(i+1)        
 
     # Color weights
     p = [r+X for r in req]
@@ -132,7 +274,7 @@ def process_data(request):
     # Create Transition Matrix
     T = zeros((Ncombs,Ncombs))
     count = 0
-    ind = 100 # Set high so that if we find currrent first, it'll be lower than ind
+    ind = 100 # Set high so that if we find current first, it'll be lower than ind
     for i in combs:
         T[count,:] = Pcomb[:]
         # Self transition prob is lowered, can't return same permutation
@@ -162,6 +304,7 @@ def process_data(request):
             xind = i
         elif i > ind:
             xind = i-1
+
         else:
             xind = -1
         
@@ -184,6 +327,7 @@ def process_data(request):
         mean_chromes = float(mean(t))
     else:
         mean_chromes = float(t[curr_ind])
+    
 
     # Modify T so that T[:,ind] represents the matrix R, probability of going from any transient state to the absorbing state, multiply by the probability of being in any transient state
     T[ind,ind] = 0
@@ -241,6 +385,7 @@ def process_data(request):
             found_median = 1
 
     prob_per_chrome = float(dot(curr_state,R))
+
     if n_to_try > stopping_point: # Approximate the remaining chromes using prob_per_chrome
         n_leftover = n_to_try - stopping_point
         cum_prob_failure = cum_prob_failure * (1-prob_per_chrome)**n_leftover
@@ -256,66 +401,6 @@ def process_data(request):
         chromes_left = float(complex_num.real)
         median_chromes = n_to_try + chromes_left
 
-    c = { 'des_r': des_r,
-        'des_g': des_g,
-        'des_b': des_b,
-        'curr_r': curr_r,
-        'curr_g': curr_g,
-        'curr_b': curr_b,
-        'str': STR,
-        'dex': DEX,
-        'int': INT,
-        'X': X,
-        'median_chromes': round(median_chromes,1),
-        'mean_chromes': round(mean_chromes,1),
-        'n_to_try': n_to_try,
-        'prob_so_far': str(round(prob_so_far*100,1)) + '%',
-        'n_prob': str(n_to_try) + '_' + str(prob_per_chrome),
-        'graph_url': 'graphs/' + str(n_to_try) + '_' + str(prob_per_chrome),
-	'intro_message': 0}
-    return c
+    return median_chromes, mean_chromes, n_to_try, prob_so_far, prob_per_chrome
 
-def check_input(input_list,min_val,max_val,request,error_list):
-    output_list=[]
-    cum_val = 0
-    error_message = 0
-    for i in range(len(input_list)):
-        input_str = input_list[i]
-        if input_str in request.form:
-            if request.form[input_str] != '':
-                try:
-                    input_var = int(request.form[input_str])
-                except ValueError:
-                    input_var = request.form[input_str]
-                    error_message = "Value not an integer"
-            else:
-                input_var = 0
-        else:
-            input_var = 0
 
-        if error_message == 0:
-            cum_val += input_var
-
-        output_list.append(input_var)
-
-    # If out of bounds, set to default value
-    if cum_val < min_val and error_message==0:
-        error_message = "Value too small, minimum = " + str(min_val)
-    # If greater than max_val, don't check if max_val = 'inf'
-    elif max_val != 'inf' and error_message==0:
-        if cum_val > max_val:
-            error_message = "Value too large, maximum = " + str(max_val)
-
-    if error_message != 0:
-        # Unique Error messages for each input
-        if input_list == ['des_r','des_g','des_b']:
-            error_message = "Desired Colors: " + error_message
-        elif input_list == ['curr_r','curr_g','curr_b']:
-            error_message = "Current Colors: " + error_message
-        elif input_list == ['n_to_try']:
-            error_message = "NChr: " + error_message
-        elif len(input_list)==1:
-            error_message = input_list[0] + ": " + error_message
-        error_list.append(error_message)    
-
-    return output_list, error_list

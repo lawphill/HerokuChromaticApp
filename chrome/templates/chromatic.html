@@ -16,6 +16,13 @@
             <h1>PoE Chromatic Calculator</h1>
         </div>
 
+        <!-- Place Important Notes Here -->
+        <div class="grid__col grid__col--1-of-1">
+            Good news, off-colors might be more common than we thought! <br>
+            I've raised the default value of X to 16 in light of a large amount of new data.
+        </div>
+
+
         <!-- Category Labels -->
         <div class="grid__col grid__col--1-of-4">
             <p class="top-label">Desired Colors</p>
@@ -142,7 +149,9 @@
         <div class="grid__col grid__col--1-of-12">
             {{ c.median_chromes }}
         </div>
-        <div class="grid__col grid__col--4-of-12"></div><!-- Spacing -->
+        <div class="grid__col grid__col--4-of-12"></div>
+        <!-- Vorici Results HERE -->
+            
         {% else %}
         <div class="grid__col grid__col--1-of-12"></div>
         {% endif %}
@@ -173,7 +182,7 @@
             {% endif %}
             <br><br>
             <footer>
-            v1.0 by Lawphill, <a href="howitworks">Interested in how it works?</a><br>
+            v1.1 by Lawphill, <a href="howitworks">Interested in how it works?</a><br>
             Help submit data <a href="https://docs.google.com/spreadsheet/ccc?key=0Ao1EUzXFpy4ldE00SWgwQVJhU0phX2dFdER2Z0FlTnc&usp=drive_web#gid=0">here</a><br>
             Special thanks to MantisPrayingMantis and <a href="http://reddit.com/r/pathofexile">r/pathofexile</a>
             </footer>
